@@ -65,7 +65,7 @@ method OTP_TOTP(cKey as character,nDigits as numeric,nInterval as numeric,cDiges
 
 #pragma BEGINDUMP
 
-#include </mnt/f/tmp/ttop/naldodj-libcotp/src/cotp.h>
+#include "cotp.h"
 #include "hbapi.h"
 #include <time.h>
 
