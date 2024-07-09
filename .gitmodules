@@ -1,0 +1,3 @@
+[submodule "src/libcotp/libcotp"]
+	path = src/libcotp/libcotp
+	url = https://github.com/naldodj/naldodj-libcotp
