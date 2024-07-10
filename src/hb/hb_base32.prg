@@ -131,94 +131,94 @@ static function _StrSplit(cString,nSize)
 
 #pragma BEGINDUMP
 
-#include "hbapi.h"
-#include <string.h>
+    #include "hbapi.h"
+    #include <string.h>
 
-static const char base32_chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+    static const char base32_chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 
-static int base32_decode(const char *szB32Encoded, unsigned char *result, int bufSize) {
-    int buffer = 0, bitsLeft = 0, count = 0;
-    for (const char *ptr = szB32Encoded; *ptr; ptr++) {
-        const char *p = strchr(base32_chars, *ptr);
-        if (p) {
-            buffer <<= 5;
-            buffer |= (p - base32_chars);
-            bitsLeft += 5;
-            if (bitsLeft >= 8) {
-                if (count >= bufSize) {
-                    return -1;
+    static int base32_decode(const char *szB32Encoded, unsigned char *result, int bufSize) {
+        int buffer = 0, bitsLeft = 0, count = 0;
+        for (const char *ptr = szB32Encoded; *ptr; ptr++) {
+            const char *p = strchr(base32_chars, *ptr);
+            if (p) {
+                buffer <<= 5;
+                buffer |= (p - base32_chars);
+                bitsLeft += 5;
+                if (bitsLeft >= 8) {
+                    if (count >= bufSize) {
+                        return -1;
+                    }
+                    result[count++] = (buffer >> (bitsLeft - 8)) & 0xFF;
+                    bitsLeft -= 8;
                 }
-                result[count++] = (buffer >> (bitsLeft - 8)) & 0xFF;
-                bitsLeft -= 8;
             }
         }
-    }
-    return count;
-}
-
-static char* base32_encode(const unsigned char *data, int length) {
-    int buffer = 0, bitsLeft = 0, count = 0;
-    int encoded_len = ((length + 4) / 5) * 8; // 8 output chars for every 5 input bytes
-    char *encoded = (char *)malloc(encoded_len + 1); // +1 for null terminator
-
-    if (!encoded) {
-        return NULL;
+        return count;
     }
 
-    for (int i = 0; i < length; i++) {
-        buffer = (buffer << 8) | data[i];
-        bitsLeft += 8;
+    static char* base32_encode(const unsigned char *data, int length) {
+        int buffer = 0, bitsLeft = 0, count = 0;
+        int encoded_len = ((length + 4) / 5) * 8; // 8 output chars for every 5 input bytes
+        char *encoded = (char *)malloc(encoded_len + 1); // +1 for null terminator
 
-        while (bitsLeft >= 5) {
-            encoded[count++] = base32_chars[(buffer >> (bitsLeft - 5)) & 0x1F];
-            bitsLeft -= 5;
+        if (!encoded) {
+            return NULL;
+        }
+
+        for (int i = 0; i < length; i++) {
+            buffer = (buffer << 8) | data[i];
+            bitsLeft += 8;
+
+            while (bitsLeft >= 5) {
+                encoded[count++] = base32_chars[(buffer >> (bitsLeft - 5)) & 0x1F];
+                bitsLeft -= 5;
+            }
+        }
+
+        if (bitsLeft > 0) {
+            buffer <<= (5 - bitsLeft);
+            encoded[count++] = base32_chars[buffer & 0x1F];
+        }
+
+        encoded[count] = '\0';
+        return encoded;
+    }
+
+    HB_FUNC_STATIC( BASE32_DECODE )
+    {
+        const char *szB32Encoded = hb_parcx(1);
+        int encoded_len = hb_parclen(1);
+        int bufSize = (encoded_len * 5) / 8; // Calculate the buffer size
+        unsigned char *szRet = (unsigned char *)malloc(bufSize);
+        int szRet_len;
+
+        if (!szRet) {
+            hb_retc_null();
+            return;
+        }
+
+        szRet_len = base32_decode(szB32Encoded, szRet, bufSize);
+        if (szRet_len < 0) {
+            free(szRet);
+            hb_retc_null();
+        } else {
+            hb_retclen((char*)szRet, szRet_len);
+            free(szRet);
         }
     }
 
-    if (bitsLeft > 0) {
-        buffer <<= (5 - bitsLeft);
-        encoded[count++] = base32_chars[buffer & 0x1F];
+    HB_FUNC_STATIC( BASE32_ENCODE )
+    {
+        const unsigned char *data = (const unsigned char *)hb_parcx(1);
+        int length = hb_parclen(1);
+        char *encoded = base32_encode(data, length);
+
+        if (encoded) {
+            hb_retc(encoded);
+            free(encoded);
+        } else {
+            hb_retc_null();
+        }
     }
-
-    encoded[count] = '\0';
-    return encoded;
-}
-
-HB_FUNC_STATIC( BASE32_DECODE )
-{
-    const char *szB32Encoded = hb_parcx(1);
-    int encoded_len = hb_parclen(1);
-    int bufSize = (encoded_len * 5) / 8; // Calculate the buffer size
-    unsigned char *szRet = (unsigned char *)malloc(bufSize);
-    int szRet_len;
-
-    if (!szRet) {
-        hb_retc_null();
-        return;
-    }
-
-    szRet_len = base32_decode(szB32Encoded, szRet, bufSize);
-    if (szRet_len < 0) {
-        free(szRet);
-        hb_retc_null();
-    } else {
-        hb_retclen((char*)szRet, szRet_len);
-        free(szRet);
-    }
-}
-
-HB_FUNC_STATIC( BASE32_ENCODE )
-{
-    const unsigned char *data = (const unsigned char *)hb_parcx(1);
-    int length = hb_parclen(1);
-    char *encoded = base32_encode(data, length);
-
-    if (encoded) {
-        hb_retc(encoded);
-        free(encoded);
-    } else {
-        hb_retc_null();
-    }
-}
 
 #pragma ENDDUMP
