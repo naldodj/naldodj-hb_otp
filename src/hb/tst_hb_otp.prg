@@ -10,7 +10,7 @@ procedure Main()
 
    local cSecretKey as character:="BACP5V6SVALB4HS7MYQEFNTRYEEDHLYE"  // Defina sua chave secreta
 
-   local oHB_OTP as object:=oHB_OTP:=hb_OTP():New()
+   local oHB_OTP as object:=hb_OTP():New()
 
    hb_cdpSelect("UTF8EX")
 
