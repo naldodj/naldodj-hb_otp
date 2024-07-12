@@ -16,6 +16,15 @@ or
 hbmk2 hb_otp_openssl.hbp
 ```
 
+## Cross-compilation
+```bash
+hbmk2 hb_otp_gcrypt.hbp -comp=mingw64 -cpu=x64 -plat=win
+```
+or
+```bash
+hbmk2 hb_otp_openssl.hbp -comp=mingw64 -cpu=x64 -plat=win
+```
+
 ## Compile (teste)
 ```bash
 hbmk2 tst_otp_gcrypt.hbp
