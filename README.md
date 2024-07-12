@@ -7,11 +7,20 @@
 - GCC/Clang and CMake to build the library
 - libgcrypt >= 1.8.0 or openssl >= 3.0.0
 
-## Compile
+## Compile (lib)
 ```bash
 hbmk2 hb_otp_gcrypt.hbp
 ```
 or
 ```bash
 hbmk2 hb_otp_openssl.hbp
+```
+
+## Compile (teste)
+```bash
+hbmk2 tst_otp_gcrypt.hbp
+```
+or
+```bash
+hbmk2 tst_otp_openssl.hbp
 ```
