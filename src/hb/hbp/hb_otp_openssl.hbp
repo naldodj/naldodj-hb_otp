@@ -1,6 +1,8 @@
 -w3 -es2
 
--compr=max
+-hblib
+
+-inc
 
 -i../libcotp/libcotp/src/
 
@@ -33,13 +35,12 @@
 -cflag=-Wno-format-nonliteral
 -cflag=-U_FORTIFY_SOURCE
 -cflag=-D_FORTIFY_SOURCE=3
--cflag=-DHMAC_WRAPPER=gcrypt
+-cflag=-DHMAC_WRAPPER=openssl
 
-./tst_hb_otp.prg
-./hb_otp.prg
-./hb_base32.prg
-../libcotp/libcotp/src/utils/base32.c
-../libcotp/libcotp/src/utils/whmac_gcrypt.c
-../libcotp/libcotp/src/otp.c
+../hb_otp.prg
+../hb_base32.prg
+../../libcotp/libcotp/src/utils/base32.c
+../../libcotp/libcotp/src/utils/whmac_openssl.c
+../../libcotp/libcotp/src/otp.c
 
--o../../bin/${hb_plat}/${hb_comp}/${hb_name}
+-o../../../lib/${hb_plat}/${hb_comp}/${hb_name}
