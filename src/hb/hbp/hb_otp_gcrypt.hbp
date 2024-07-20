@@ -4,7 +4,10 @@
 
 -inc
 
--i../libcotp/libcotp/src/
+-i../../libcotp/libcotp/src/
+-i../../libcotp/libcotp/src/utils/
+-I../../libcotp/libcotp/src/
+-I../../libcotp/libcotp/src/utils/
 
 -lhbmisc
 -lhbnf
