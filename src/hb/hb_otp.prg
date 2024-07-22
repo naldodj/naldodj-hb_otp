@@ -20,6 +20,8 @@ method OTP_HOTP(cKey as character,nDigits as numeric,nInterval as numeric,cDiges
     local cToken as character
     local nDigest as numeric
 
+    hb_default(@nDigits,6)
+    hb_default(@nInterval,30)
     hb_default(@cDigest,"SHA1")
 
     switch cDigest
@@ -45,6 +47,8 @@ method OTP_TOTP(cKey as character,nDigits as numeric,nInterval as numeric,cDiges
     local cToken as character
     local nDigest as numeric
 
+    hb_default(@nDigits,6)
+    hb_default(@nInterval,30)
     hb_default(@cDigest,"SHA1")
 
     switch cDigest
@@ -67,7 +71,10 @@ method OTP_TOTP(cKey as character,nDigits as numeric,nInterval as numeric,cDiges
 
 method OTP_STEAM_TOTP(cKey as character,nInterval as numeric) class hb_OTP
 
-    local cToken as character:=OTP_STEAM_TOTP(cKey,nInterval)
+    local cToken as character
+
+    hb_default(@nInterval,30)
+    cToken:=OTP_STEAM_TOTP(cKey,nInterval)
 
     return(cToken) as character
 
