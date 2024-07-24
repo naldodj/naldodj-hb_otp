@@ -11,17 +11,15 @@ procedure Main(...)
    local aArgs as array:=hb_AParams()
 
    local cKey as character
-   local cType as character
    local cParam as character
-   local cDigest as character
    local cArgName as character
-   local c2FACode as character:=""
+
+   local lBase64 as logical
 
    local idx as numeric
    local nDigits as numeric
-   local nInterval as numeric
 
-   local oHB_OTP as object
+   local oHB_Base32 as object
 
    hb_cdpSelect("UTF8EX")
 
@@ -51,24 +49,10 @@ procedure Main(...)
             endif
 
             do case
-               case (cArgName=="-k")
-                  cKey:=cParam
-                  if (empty(cKey))
-                     ShowHelp("Attention: The secret key is missing!")
-                     break
-                  endif
                case (cArgName=="-s")
                   nDigits:=val(cParam)
-               case (cArgName=="-i")
-                  nInterval:=val(cParam)
-               case (cArgName=="-d")
-                  cDigest:=Upper(allTrim(cParam))
-               case (cArgName=="-t")
-                  cType:=Upper(allTrim(cParam))
-                  if (!(cType$"TOTP|HTOP"))
-                     ShowHelp("Unrecognized option:"+cArgName+iif(Len(cParam)>0,"="+cParam,""))
-                     break
-                  endif
+               case (cArgName=="-base64-")
+                  lBase64:=.F.
                otherwise
                   ShowHelp("Unrecognized option:"+cArgName+iif(Len(cParam)>0,"="+cParam,""))
                   break
@@ -76,32 +60,23 @@ procedure Main(...)
          endif
       next each
 
-     if (empty(cKey))
-         ShowHelp("Attention: The secret key is missing!")
-         break
+      hb_default(@nDigits,20)
+      hb_default(@lBase64,.T.)
+
+      cKey:=hb_randStr(nDigits)
+
+      if (lBase64)
+         cKey:=hb_base64Encode(cKey,.F.)
       endif
 
-      hb_default(@nDigits,6)
-      hb_default(@nInterval,30)
-      hb_default(@cDigest,"SHA1")
-      hb_default(@cType,"TOTP")
+      oHB_Base32:=hb_Base32():New()
+      cKey:=ohb_Base32:Encode_C(cKey)
 
-      oHB_OTP:=hb_OTP():New()
-      if (cType=="TOTP")
-         c2FACode:=oHB_OTP:OTP_TOTP(cKey,nDigits,nInterval,cDigest)
-      elseif (cType=="HOTP")
-         c2FACode:=oHB_OTP:OTP_HOTP(cKey,nDigits,nInterval,cDigest)
-      else
-         cArgName:="-t"
-         ShowHelp("Unrecognized option:"+cArgName+iif(Len(cType)>0,"="+cType,""))
-         break
-      endif
-
-      OutStd(c2FACode)
+      OutStd(cKey)
 
    end sequence
 
-   return
+    return
 
 static procedure ShowSubHelp(xLine as anytype,/*@*/nMode as numeric,nIndent as numeric,n as numeric)
 
@@ -148,7 +123,7 @@ static procedure ShowHelp(cExtraMessage as character,aArgs as array)
    if (Empty(aArgs).or.(Len(aArgs)<=1).or.(Empty(aArgs[1])))
       aHelp:={;
          cExtraMessage;
-         ,"HB_OTP ("+ExeName()+") "+HBRawVersion();
+         ,"HBGenKey ("+ExeName()+") "+HBRawVersion();
          ,"Copyright (c) 2024-"+hb_NToS(Year(Date()))+", "+hb_Version(HB_VERSION_URL_BASE);
          ,"";
          ,"Syntax:";
@@ -158,11 +133,8 @@ static procedure ShowHelp(cExtraMessage as character,aArgs as array)
          ,"Options:";
          ,{;
              "-h or --help       Show this help screen";
-            ,"-k=<Secret Key>    Specify the secret key";
-            ,"-s=<digits>        Specify the number of digits in the 2FA code";
-            ,"-i=<interval>      Specify the interval, in seconds, for 2FA code generation";
-            ,"-d=<digest>        Specify the digest algorithm to use for generating the 2FA code: SHA1, SHA256, SHA512";
-            ,"-t=<type>          Specify the OTP type to use for generating the 2FA code: TOTP, HOTP";
+            ,"-s=<digits>        Specify the number of digits in the key code";
+            ,"-base64-           When this option is specified, the random key generated will not be encoded in base64 before being converted to base32";
          };
       }
    else
