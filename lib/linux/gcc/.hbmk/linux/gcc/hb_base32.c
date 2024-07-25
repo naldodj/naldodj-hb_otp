@@ -1,7 +1,7 @@
 /*
  * Harbour 3.2.0dev (r2307062207)
  * GNU C 9.4 (64-bit)
- * Generated C source from "./hb_base32.prg"
+ * Generated C source from "../hb_base32.prg"
  */
 
 #include "hbvmpub.h"
@@ -89,7 +89,7 @@ HB_INIT_SYMBOLS_BEGIN( hb_vm_SymbolInit_HB_BASE32 )
 { "INT", {HB_FS_PUBLIC}, {HB_FUNCNAME( INT )}, NULL },
 { "AADD", {HB_FS_PUBLIC}, {HB_FUNCNAME( AADD )}, NULL },
 { "(_INITSTATICS00001)", {HB_FS_INITEXIT | HB_FS_LOCAL}, {hb_INITSTATICS}, NULL }
-HB_INIT_SYMBOLS_EX_END( hb_vm_SymbolInit_HB_BASE32, "./hb_base32.prg", 0x0, 0x0003 )
+HB_INIT_SYMBOLS_EX_END( hb_vm_SymbolInit_HB_BASE32, "../hb_base32.prg", 0x0, 0x0003 )
 
 #if defined( HB_PRAGMA_STARTUP )
    #pragma startup hb_vm_SymbolInit_HB_BASE32
@@ -277,7 +277,7 @@ HB_FUNC_INITSTATICS()
 	hb_vmExecute( pcode, symbols );
 }
 
-#line 133 "./hb_base32.prg"
+#line 133 "../hb_base32.prg"
 
     #include "hbapi.h"
     #include <string.h>
