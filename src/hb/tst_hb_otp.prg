@@ -196,6 +196,7 @@ static procedure ShowHelp(cExtraMessage as character,aArgs as array)
             ,"-i=<interval>      Specify the interval, in seconds, for 2FA code generation";
             ,"-d=<digest>        Specify the digest algorithm to use for generating the 2FA code: SHA1, SHA256, SHA512";
          };
+         ,"";
       }
    else
       ShowHelp("Unrecognized help option")

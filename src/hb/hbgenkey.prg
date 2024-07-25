@@ -26,20 +26,20 @@ procedure Main(...)
    begin sequence
 
       if (;
-            (Empty(aArgs));
-            .or.;
-            Lower(aArgs[1])=="-h";
-            .or.;
-            Lower(aArgs[1])=="--help";
+            (!Empty(aArgs));
+            .and.;
+            (;
+               Lower(aArgs[1])=="-h";
+               .or.;
+               Lower(aArgs[1])=="--help";
+            );
       )
          ShowHelp(nil,aArgs)
          break
       endif
 
       for each cParam in aArgs
-
          if (!Empty(cParam))
-
             if ((idx:=At("=",cParam))==0)
                cArgName:=Lower(cParam)
                cParam:=""
@@ -47,7 +47,6 @@ procedure Main(...)
                cArgName:=Left(cParam,idx-1)
                cParam:=SubStr(cParam,idx+1)
             endif
-
             do case
                case (cArgName=="-s")
                   nDigits:=val(cParam)
@@ -136,6 +135,7 @@ static procedure ShowHelp(cExtraMessage as character,aArgs as array)
             ,"-s=<digits>        Specify the number of digits in the key code";
             ,"-base64-           When this option is specified, the random key generated will not be encoded in base64 before being converted to base32";
          };
+         ,"";
       }
    else
       ShowHelp("Unrecognized help option")

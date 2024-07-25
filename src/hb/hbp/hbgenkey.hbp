@@ -10,7 +10,8 @@
 -lm
 -lgcrypt
 -cflag=-U_FORTIFY_SOURCE
--cflag=-D_FORTIFY_SOURCE=3
+{cygwin}-cflag=-D_FORTIFY_SOURCE=1
+{!cygwin}-cflag=-D_FORTIFY_SOURCE=3
 
 ../hbgenkey.prg
 ../hb_base32.prg
