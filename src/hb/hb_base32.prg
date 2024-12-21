@@ -22,15 +22,15 @@ endclass
 
 method Init() class hb_Base32
    self:cB32Alphabet:="ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"
-return(self)
+    return(self)
 
 method Encode(cData as character) class hb_Base32
 
    local cBin as character
-   local cBinaryString as character:=self:ToBinaryString(cData)
+   local cBinaryString as character:=self:ToBinaryString(hb_base64Encode(cData,.F.))
    local aFiveBitBinaryArray as array:=_StrSplit(cBinaryString,5)
    local cBase32 as character:=""
-   local i,nDec,nValue as numeric
+   local i,nDec,nValue,nPadding as numeric
 
    for i:=1 to Len(aFiveBitBinaryArray)
       cBin:=aFiveBitBinaryArray[i]
@@ -39,14 +39,18 @@ method Encode(cData as character) class hb_Base32
       cBase32+=hb_BSubStr(self:cB32Alphabet,nValue+1,1)
    next i
 
+   nPadding := 8 - hb_BLen(cBase32) % 8
+   if nPadding != 8
+      cBase32 += Replicate("=", nPadding)
+   endif
+
    return(cBase32)
 
 method Decode(cBase32 as character) class hb_Base32
 
    local cDecode as character
-   local cBChar0 as character
    local cBinaryString as character:=""
-   local aBase32 as array:=_StrSplit(Upper(cBase32),1)
+   local aBase32 as array:=_StrSplit(Upper(strTran(cBase32,"=","")),1)
    local i,nPos as numeric
 
    for i:=1 to Len(aBase32)
@@ -58,15 +62,7 @@ method Decode(cBase32 as character) class hb_Base32
 
    cDecode:=self:FromBinaryString(cBinaryString)
 
-   //TODO Begin: Rever este fragamento
-   cDecode:=RTrim(cDecode)
-   cBChar0:=" "
-   if (hb_bRight(cDecode,1)!=cBChar0)
-      cDecode:=hb_BPadR(cDecode,hb_bLen(cDecode)+1,cBChar0)
-   endif
-   //TODO End: Rever este fragamento
-
-   return(cDecode)
+   return(hb_base64Decode(cDecode))
 
 method ToBinaryString(cData as character) class hb_Base32
 
@@ -86,25 +82,33 @@ method FromBinaryString(cBinaryString as character) class hb_Base32
 
    local aEightBitBinaryArray as array:=_StrSplit(cBinaryString,8)
    local cBChar as character
-   local cBChar0:=hb_BChar(0) as character
    local cDecoded as character:=""
    local i,nValue as numeric
 
    for i:=1 to Len(aEightBitBinaryArray)
       nValue:=BinToDec(aEightBitBinaryArray[i])
       cBChar:=hb_BChar(nValue)
-      if (cBChar!=cBChar0)
-         cDecoded+=cBChar
-      endif
+      cDecoded+=cBChar
    next i
 
    return(cDecoded)
 
 method Encode_C(cData as character) class hb_Base32
-return(base32_encode(cData)) as character
+
+    local cBase32 as character := base32_encode(hb_base64Encode(cData,.F.))
+    local nPadding as numeric
+
+    nPadding := 8 - hb_BLen(cBase32) % 8
+    if nPadding != 8
+        cBase32 += Replicate("=", nPadding)
+    endif
+
+    return(cBase32) as character
 
 method Decode_C(cBase32 as character) class hb_Base32
-return(base32_decode(cBase32)) as character
+    local cDecoded as character :=strTran(cBase32,"=","")
+    cDecoded:=base32_decode(cDecoded)
+    return(hb_base64Decode(cDecoded)) as character
 
 static function _StrSplit(cString,nSize)
 
@@ -112,7 +116,6 @@ static function _StrSplit(cString,nSize)
    local i,nMod,nStringSize as numeric
 
    nStringSize:=hb_bLen(cSTring)
-   //TODO Begin: Rever este fragamento
    if (nSize>1)
       nMod:=Mod(nStringSize,nSize)
       if (nMod!=0)
@@ -121,7 +124,6 @@ static function _StrSplit(cString,nSize)
          cString:=HB_BPADR(cString,nStringSize,"0")
       endif
    endif
-   //TODO End: Rever este fragamento
 
    for i:=1 to nStringSize step nSize
       aAdd(aResult,hb_BSubStr(cString,i,nSize))

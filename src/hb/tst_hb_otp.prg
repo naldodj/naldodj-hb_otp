@@ -54,7 +54,7 @@ procedure Main(...)
                if (empty(cSecretKey))
                   ShowHelp("Attention: The secret key is missing!")
                   return
-               endif               
+               endif
             case (cArgName=="-s")
                nDigits:=val(cParam)
             case (cArgName=="-i")

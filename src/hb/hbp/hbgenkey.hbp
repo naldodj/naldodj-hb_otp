@@ -1,6 +1,6 @@
 -w3 -es2
 
--compr=max
+#-compr=max
 
 -lhbmisc
 -lhbnf

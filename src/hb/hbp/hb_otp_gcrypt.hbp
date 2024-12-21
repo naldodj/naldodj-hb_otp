@@ -36,6 +36,7 @@
 -cflag=-Werror=implicit-function-declaration
 -cflag=-Wno-sign-compare
 -cflag=-Wno-format-nonliteral
+-cflag=-Wno-char-subscripts
 -cflag=-U_FORTIFY_SOURCE
 -cflag=-D_FORTIFY_SOURCE=3
 -cflag=-DHMAC_WRAPPER=gcrypt
